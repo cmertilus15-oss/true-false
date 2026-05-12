@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hormone Challenge | True or False</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --deep-blue: #0f172a;
+            --violet: #5b21b6;
+            --cyan: #06b6d4;
+            --silver: #94a3b8;
+            --gold: #fbbf24;
+            --glass: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: var(--deep-blue);
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow-x: hidden;
+            background: radial-gradient(circle at 0% 0%, #1e1b4b 0%, #0f172a 100%);
+        }
+
+        /* Animated Background Elements */
+        .bg-blob {
+            position: absolute;
+            width: 500px;
+            height: 500px;
+            background: var(--violet);
+            filter: blur(120px);
+            opacity: 0.2;
+            z-index: 0;
+            border-radius: 50%;
+            animation: move 20s infinite alternate;
+        }
+
+        .bg-blob-2 {
+            position: absolute;
+            width: 400px;
+            height: 400px;
+            background: var(--cyan);
+            filter: blur(100px);
+            opacity: 0.15;
+            z-index: 0;
+            right: 0;
+            bottom: 0;
+            border-radius: 50%;
+            animation: move 15s infinite alternate-reverse;
+        }
+
+        @keyframes move {
+            from { transform: translate(-10%, -10%); }
+            to { transform: translate(20%, 20%); }
+        }
+
+        /* Container */
+        .game-wrapper {
+            position: relative;
+            z-index: 10;
+            width: 90%;
+            max-width: 850px;
+            padding: 20px;
+        }
+
+        /* Header Area */
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 3rem;
+            margin-bottom: 10px;
+            background: linear-gradient(to right, #fff, var(--cyan), var(--silver));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header p {
+            color: var(--silver);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+        }
+
+        /* Game Card */
+        .card {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 30px;
+            padding: 50px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .topic-badge {
+            display: inline-block;
+            padding: 6px 16px;
+            background: rgba(6, 182, 212, 0.1);
+            border: 1px solid rgba(6, 182, 212, 0.3);
+            border-radius: 100px;
+            font-size: 0.8rem;
+            color: var(--cyan);
+            margin-bottom: 30px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .question-text {
+            font-size: 1.8rem;
+            line-height: 1.4;
+            margin-bottom: 40px;
+            min-height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 300;
+        }
+
+        /* Buttons */
+        .button-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .btn {
+            padding: 20px;
+            border-radius: 15px;
+            border: none;
+            cursor: pointer;
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 600;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-true {
+            background: transparent;
+            border: 2px solid var(--cyan);
+            color: white;
+        }
+
+        .btn-true:hover:not(:disabled) {
+            background: var(--cyan);
+            box-shadow: 0 0 20px rgba(6, 182, 212, 0.4);
+        }
+
+        .btn-false {
+            background: transparent;
+            border: 2px solid var(--violet);
+            color: white;
+        }
+
+        .btn-false:hover:not(:disabled) {
+            background: var(--violet);
+            box-shadow: 0 0 20px rgba(91, 33, 182, 0.4);
+        }
+
+        .btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        /* Feedback Styles */
+        .feedback {
+            margin-top: 30px;
+            padding: 15px;
+            border-radius: 12px;
+            font-weight: 500;
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .correct { background: rgba(34, 197, 94, 0.1); color: #4ade80; border: 1px solid rgba(74, 222, 128, 0.2); }
+        .incorrect { background: rgba(239, 68, 68, 0.1); color: #f87171; border: 1px solid rgba(248, 113, 113, 0.2); }
+
+        .btn-next {
+            margin-top: 30px;
+            background: white;
+            color: var(--deep-blue);
+            width: 100%;
+            display: none;
+        }
+
+        .btn-next:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+
+        /* Progress & Score */
+        .status-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 40px;
+            color: var(--silver);
+            font-size: 0.9rem;
+        }
+
+        .progress-container {
+            width: 100%;
+            height: 4px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 2px;
+            margin-top: 10px;
+        }
+
+        #progress-fill {
+            height: 100%;
+            background: var(--cyan);
+            width: 0%;
+            transition: width 0.5s ease;
+            box-shadow: 0 0 10px var(--cyan);
+        }
+
+        /* Results Screen */
+        #result-screen {
+            display: none;
+            text-align: center;
+        }
+
+        .score-circle {
+            width: 150px;
+            height: 150px;
+            border: 5px solid var(--cyan);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            font-weight: 800;
+            margin: 0 auto 30px;
+            box-shadow: 0 0 30px rgba(6, 182, 212, 0.2);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 600px) {
+            .header h1 { font-size: 2rem; }
+            .card { padding: 30px 20px; }
+            .button-group { grid-template-columns: 1fr; }
+            .question-text { font-size: 1.4rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="bg-blob"></div>
+    <div class="bg-blob-2"></div>
+
+    <div class="game-wrapper">
+        <div class="header">
+            <p>Interactive Exposition Activity</p>
+            <h1>Hormone Challenge</h1>
+        </div>
+
+        <!-- Quiz Area -->
+        <div id="quiz-screen" class="card">
+            <div id="topic-badge" class="topic-badge">General Science</div>
+            <div id="question" class="question-text">
+                Loading your challenge...
+            </div>
+
+            <div class="button-group">
+                <button onclick="checkAnswer(true)" class="btn btn-true" id="true-btn">True</button>
+                <button onclick="checkAnswer(false)" class="btn btn-false" id="false-btn">False</button>
+            </div>
+
+            <div id="feedback" class="feedback"></div>
+
+            <button onclick="nextQuestion()" id="next-btn" class="btn btn-next">Next Question <span id="arrow">→</span></button>
+
+            <div class="status-bar">
+                <span>Question <span id="current-q">1</span> of <span id="total-q">10</span></span>
+                <span>Score: <span id="score">0</span></span>
+            </div>
+            <div class="progress-container">
+                <div id="progress-fill"></div>
+            </div>
+        </div>
+
+        <!-- Result Area -->
+        <div id="result-screen" class="card">
+            <h2 style="font-size: 2.5rem; margin-bottom: 10px;">Exposition Complete!</h2>
+            <p style="color: var(--silver); margin-bottom: 40px;">Great job learning about the most surprising machine.</p>
+            
+            <div class="score-circle">
+                <span id="final-score">0</span>
+            </div>
+
+            <p id="result-message" style="margin-bottom: 40px; font-size: 1.2rem;"></p>
+
+            <button onclick="restartGame()" class="btn btn-true" style="width: 100%; border-color: var(--gold); color: var(--gold);">Play Again</button>
+        </div>
+    </div>
+
+    <script>
+        const quizData = [
+            {
+                presenter: "Christian",
+                topic: "What Are Hormones?",
+                question: "Hormones are chemical messengers that travel through the blood to deliver instructions.",
+                answer: true,
+                explanation: "Correct! They are chemical messengers produced by glands."
+            },
+            {
+                presenter: "Christian",
+                topic: "What Are Hormones?",
+                question: "Hormones only affect the brain and have no effect on the rest of the body.",
+                answer: false,
+                explanation: "False. They affect almost every cell and organ in the body."
+            },
+            {
+                presenter: "Nathaly",
+                topic: "Main Glands",
+                question: "The pituitary gland is often called the 'Master Gland' because it controls other glands.",
+                answer: true,
+                explanation: "True! It directs many other endocrine functions."
+            },
+            {
+                presenter: "Nathaly",
+                topic: "Main Glands",
+                question: "Adrenal glands are located in the throat and help you sleep better.",
+                answer: false,
+                explanation: "False. They are located on top of the kidneys and handle stress."
+            },
+            {
+                presenter: "Steisy",
+                topic: "Communication",
+                question: "Hormones use a 'lock and key' system to find the correct cells.",
+                answer: true,
+                explanation: "True! They only bind to specific receptors on target cells."
+            },
+            {
+                presenter: "Steisy",
+                topic: "Communication",
+                question: "Hormones travel instantly like electricity through the nerves.",
+                answer: false,
+                explanation: "False. They travel through the blood, which is slower than nerve impulses."
+            },
+            {
+                presenter: "Tito",
+                topic: "Effects",
+                question: "Hormones can influence our mood, growth, and even our energy levels.",
+                answer: true,
+                explanation: "Correct! They regulate energy, emotions, and physical development."
+            },
+            {
+                presenter: "Tito",
+                topic: "Effects",
+                question: "The hormone adrenaline only makes us feel sleepy and calm.",
+                answer: false,
+                explanation: "False. Adrenaline prepares us for 'fight or flight' (energy and excitement)."
+            },
+            {
+                presenter: "Ámbar",
+                topic: "Insulin & Diabetes",
+                question: "Insulin helps the body take sugar from the blood to use it as energy.",
+                answer: true,
+                explanation: "True! It acts like a key to let glucose into the cells."
+            },
+            {
+                presenter: "Ámbar",
+                topic: "Insulin & Diabetes",
+                question: "Diabetes is a condition where the body has no problem controlling blood sugar levels.",
+                answer: false,
+                explanation: "False. In diabetes, the body cannot regulate sugar properly."
+            },
+            {
+                presenter: "Amalia",
+                topic: "Healthy Habits",
+                question: "Sleeping 8 hours a day helps your body balance its hormones naturally.",
+                answer: true,
+                explanation: "Correct! Sleep is vital for hormone repair and regulation."
+            },
+            {
+                presenter: "Amalia",
+                topic: "Healthy Habits",
+                question: "Eating only candy and no vegetables is the best way to keep your pancreas healthy.",
+                answer: false,
+                explanation: "False. A balanced diet is essential for gland health!"
+            }
+        ];
+
+        let currentQuestionIndex = 0;
+        let score = 0;
+
+        const questionEl = document.getElementById('question');
+        const badgeEl = document.getElementById('topic-badge');
+        const feedbackEl = document.getElementById('feedback');
+        const nextBtn = document.getElementById('next-btn');
+        const scoreEl = document.getElementById('score');
+        const currentQEl = document.getElementById('current-q');
+        const totalQEl = document.getElementById('total-q');
+        const progressFill = document.getElementById('progress-fill');
+        const trueBtn = document.getElementById('true-btn');
+        const falseBtn = document.getElementById('false-btn');
+        const quizScreen = document.getElementById('quiz-screen');
+        const resultScreen = document.getElementById('result-screen');
+
+        function initQuiz() {
+            currentQuestionIndex = 0;
+            score = 0;
+            totalQEl.innerText = quizData.length;
+            showQuestion();
+        }
+
+        function showQuestion() {
+            const q = quizData[currentQuestionIndex];
+            badgeEl.innerText = `${q.presenter}: ${q.topic}`;
+            questionEl.innerText = q.question;
+            feedbackEl.style.display = 'none';
+            nextBtn.style.display = 'none';
+            trueBtn.disabled = false;
+            falseBtn.disabled = false;
+            
+            // Update Progress
+            currentQEl.innerText = currentQuestionIndex + 1;
+            const progress = ((currentQuestionIndex) / quizData.length) * 100;
+            progressFill.style.width = `${progress}%`;
+        }
+
+        function checkAnswer(userAnswer) {
+            const q = quizData[currentQuestionIndex];
+            trueBtn.disabled = true;
+            falseBtn.disabled = true;
+
+            if (userAnswer === q.answer) {
+                score++;
+                scoreEl.innerText = score;
+                feedbackEl.innerText = "✓ " + q.explanation;
+                feedbackEl.className = "feedback correct";
+            } else {
+                feedbackEl.innerText = "✗ " + q.explanation;
+                feedbackEl.className = "feedback incorrect";
+            }
+
+            feedbackEl.style.display = 'block';
+            nextBtn.style.display = 'block';
+        }
+
+        function nextQuestion() {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < quizData.length) {
+                showQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        function showResults() {
+            quizScreen.style.display = 'none';
+            resultScreen.style.display = 'block';
+            document.getElementById('final-score').innerText = `${score}/${quizData.length}`;
+            progressFill.style.width = `100%`;
+
+            let msg = "";
+            const percentage = (score / quizData.length) * 100;
+            if (percentage === 100) msg = "Master of Hormones! Excellent work.";
+            else if (percentage >= 70) msg = "Great job! You learned a lot today.";
+            else msg = "Good effort! Review the glands and hormones topics again.";
+            
+            document.getElementById('result-message').innerText = msg;
+        }
+
+        function restartGame() {
+            quizScreen.style.display = 'block';
+            resultScreen.style.display = 'none';
+            scoreEl.innerText = "0";
+            initQuiz();
+        }
+
+        // Start the game
+        window.onload = initQuiz;
+    </script>
+</body>
+</html>
